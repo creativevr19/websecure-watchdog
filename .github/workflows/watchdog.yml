@@ -1,0 +1,20 @@
+name: websecure-worker-watchdog
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # GitHub may delay scheduled runs; this is a best-effort alarm, not a guarantee.
+  workflow_dispatch: {}
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - run: node check.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          WORKER_ID: oracle-mumbai-1
+          MAX_AGE_SECONDS: '900'
